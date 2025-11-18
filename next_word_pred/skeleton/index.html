@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LSTM Lyrics completion system project</title>
+    <style>
+        body {
+            font-family: "sunnday", sans-serif;
+            background: #1e1e1e;
+            color: #f0e6d2;
+            padding: 40px;
+            text-align: center;
+            font-size: 2em;
+        }
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+        textarea {
+            width: 80%;
+            height: 120px;
+            padding: 15px;
+            font-size: 1.4em;
+            background: #2b2b2b;
+            color: #f0e6d2;
+            /* border: 2px solid #8b5a2b; */
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        #suggestion {
+            font-size: 2em;
+            font-weight: bold;
+            color: #ff6b6b;
+            min-height: 60px;
+            margin-top: 20px;
+            font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+        }
+    </style>
+</head>
+<body>
+    <h1>Lyrics verse completion</h1>
+    <p class="label">Type any verse i will complete the lyric</p>
+    
+    <textarea id="inputText" placeholder="enter your lyrics here ill complete it"></textarea>
+    
+    <div id="suggestion"></div>
+
+    <script>
+        const input = document.getElementById('inputText');
+        const suggestion = document.getElementById('suggestion');
+        
+        let timeout;
+        input.addEventListener('input', () => {
+            clearTimeout(timeout);
+            suggestion.textContent = "thinking...";
+            
+            timeout = setTimeout(async () => {
+                const text = input.value.trim();
+                if (!text) {
+                    suggestion.textContent = "";
+                    return;
+                }
+                
+                const res = await fetch(`/predict?q=${encodeURIComponent(text)}`);
+                const data = await res.json();
+                
+                if (data.next_words) {
+                    suggestion.textContent = `Completion: ${text} ` + data.next_words;
+                } else {
+                    suggestion.textContent = "";
+                }
+            }, 400); // wait 400ms after typing stops
+        });
+    </script>
+</body>
+</html>
