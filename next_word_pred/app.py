@@ -42,7 +42,7 @@ model.to(device)
 # Reverse vocab for prediction
 idx_to_word = {i: word for word, i in vocab.items()}
 
-def predict_next_words(text, num_words=6):
+def predict_next_words(text, num_words=60):
     if not text.strip():
         return ""
     
@@ -75,5 +75,5 @@ async def home(request: Request):
 
 @app.get("/predict")
 async def predict(q: str = ""):
-    words = predict_next_words(q, num_words=14)  # ← change 6 here for more/less
+    words = predict_next_words(q, num_words=60)  # ← change 6 here for more/less
     return {"next_words": words}
